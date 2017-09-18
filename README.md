@@ -1,6 +1,7 @@
 # openhacker
 
 Import openhacker.sql to your database and modify sql/connect.php to connect back to your database.
+The administrator login is Admin password
 
 Live demo at https://boothlabs.me/
 
