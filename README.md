@@ -1,6 +1,6 @@
 # openhacker
 
-Standby for SQL database, sanitizing my current copy that contains sensitive info.
+Import openhacker.sql to your database and modify sql/connect.php to connect back to your database.
 
 Live demo at https://boothlabs.me/
 
