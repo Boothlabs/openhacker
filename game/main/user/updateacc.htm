@@ -1,11 +1,13 @@
 <?php
 $bio = $_POST['bio'];
-$_safebio = mysqli_real_escape_string($conn, $bio);
 
-$sql = "UPDATE accounts SET bio='$_safebio' WHERE username='$username'";
+// Sanitize bio but allow for a minimal amount of HTML so the user can style their bio thir way.
+$safebio = $purifier->purify($_safebio);
+
+$sql = "UPDATE accounts SET bio='$safebio' WHERE username='$username'";
 
 $result = $conn->query($sql);
 
-header("location: /game/main/index.php?a=accountdetails");
+header("location: ?a=accountdetails");
 
 ?>

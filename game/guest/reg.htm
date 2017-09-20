@@ -8,6 +8,9 @@ else {
 if (empty($_SERVER['HTTP_CF_CONNECTING_IP'])) {
 	if(!empty($_SERVER["HTTP_X_FORWARDED_FOR"])) {
 		$ip = $_SERVER['HTTP_X_FORWARDED_FOR'];
+		// Check if IP is valid
+		if(filter_var($ip, FILTER_VALIDATE_IP)){} // Leave ip as is
+		else{$ip = $_SERVER['REMOTE_ADDR'];};		
 	}
 	else{
 	$ip = $_SERVER['REMOTE_ADDR'];
@@ -15,7 +18,11 @@ if (empty($_SERVER['HTTP_CF_CONNECTING_IP'])) {
 }
 else {
 	$ip = $_SERVER['HTTP_CF_CONNECTING_IP'];
+	// Check if IP is valid
+	if(filter_var($ip, FILTER_VALIDATE_IP)){} // Leave ip as is
+	else{$ip = $_SERVER['REMOTE_ADDR'];};	
 };
+
 $salt = substr(str_replace('+','.',base64_encode(md5(mt_rand(), true))),0,16);
 $rounds = 10000;
 $encpass = crypt($_POST['password'], sprintf('$6$rounds=%d$%s$', $rounds, $salt));
@@ -52,22 +59,29 @@ if ($_POST["g-recaptcha-response"]) {
 
 if ($response != null && $response->success) {
 
-
 //if submit is not blanked i.e. it is clicked.
 if(isset($_REQUEST['submit'])!='')
 {
-if($_REQUEST['username']=='' || $_REQUEST['email']=='' || $_REQUEST['password']=='')
+if($_POST['username']=='' || $_POST['email']=='' || $_POST['password']=='')
 {
 echo "please fill the empty field.";
 }
 else
 {
-$sql = "INSERT INTO accounts(username,email,password,regip,reghash) VALUES('".$_REQUEST['username']."', '".$_REQUEST['email']."', '$encpass', '$ip', '$reghash')";
+
+// Validate and Sanitize Username
+
+$username = $_POST['username'];
+$safeusername = (filter_var($username, FILTER_SANITIZE_STRING));
+if(@preg_match(''/^[a-zA-Z0-9]{3,}$/', $safeusername)) { // invalid username
+	echo "Your username is not allowed. Allowed values are a-z, A-Z, 0-9 and must be at least 3 characters";
+}
+else { // valid username
+
+$sql = "INSERT INTO accounts(username,email,password,regip,reghash) VALUES('$safeusername', '$email', '$encpass', '$ip', '$reghash')";
 $result = $conn->query($sql);
 if($result)
 {
-
-$username = $_POST['username'];
 
 $to      = $email; // Send email to our user
 $subject = "Hacker City Signup | Verification"; // Give the email a subject 
@@ -79,7 +93,7 @@ Your account has been created and the final step is to activate your account.
 We use activation emails as a way to prevent bots and trouble users from abusing the system and flooding the site with fake users.
  
 ------------------------
-Username: $username
+Username: $safeusername
 Password: Not sent via email for security 
 ------------------------
  
@@ -91,9 +105,7 @@ https://boothlabs.me/verify.php?email=$email&reghash=$reghash
 $headers = 'From:noreply@boothlabs.me' . "\r\n"; // Set from headers
 mail($to, $subject, $message, $headers); // Send our email
 
-$username = $_REQUEST['username'];
-
-$sql9 = "SELECT id FROM accounts WHERE username = '$username';";
+$sql9 = "SELECT id FROM accounts WHERE username = '$safeusername';";
 $result9 = $conn->query($sql9);
 while ($row9 = $result9->fetch_assoc()){
 $userid = $row9['id'];
@@ -102,6 +114,11 @@ $userid = $row9['id'];
 $sql10 = "INSERT INTO `usersystems` (`userid`, `cpu`, `motherboard`, `ram`, `os`, `hddtype`, `hddhealth`, `size`, `spaceused`, `spacefree`, `logs`, `securitypack`, `firewall`, `sphealth`, `firewallhealth`, `connectedto`, `connectiontype`, `ipaddress`, `gatewayip`, `gatewaystatus`, `systemstatus`) VALUES ('$userid', '486', 'Simple Motherboard', '256MB', 'DOS', '10GB', '100', '10GB', '0', '10', 'Not Installed', 'Not Installed', 'Not Installed', '0', '0', 'n00bnet', 'Loopback', '127.0.0.1', '', 'Offline', 'online');";
 $result10 = $conn->query($sql10);
 
+// Create bank account
+
+$sql11 = "INSERT INTO 'economy' ('userid') VALUES ('$userid');"
+$result11 = $conn->query($sql11);
+
 echo "Account Created Successfully, Check your email for instructions on activating your account .";
 }
 else {
@@ -109,7 +126,7 @@ echo "There is some problem creating your account, please contact an administrat
 echo "<br>";
 echo $sql;
 };
-}
+};
 }
 }
 else {

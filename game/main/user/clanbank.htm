@@ -21,7 +21,7 @@ if(!isset($_SESSION['clanbank_login'])){
 		echo "<br>";
 		echo 'Password:  <input type="password" name="password" value=""><br>';
 		echo "<br>";
-		echo '<input style="width:70px;" type="submit" name="submit" value="Login">';
+		echo "<button class='btn waves-effect waves-light' type='submit' name='submit'>Login<i class='material-icons center'></i></button>";
 		echo "<br>";
 		echo "<br>";
 		echo "</form>";
@@ -62,9 +62,19 @@ $resultGetName = $conn->query($sqlGetName);
 	echo "<br>";
 	echo "Details:"; echo '<input type="text" name="details" value="">';
 	echo "<br>";
+
+    echo "<input type='radio' value='hacker' id='hacker' name='type'>";
+    echo "<label for='hacker'>Hacker</label>";
+    echo "<div class='check'><div class='inside'></div></div>";
+
+    echo "<input type='radio' value='clan' id='clan' name='type'>";
+    echo "<label for='clan'>Clan</label>";   
+    echo "<div class='check'><div class='inside'></div></div>";
+
     echo "<br>";
 
 	echo "<button class='btn waves-effect waves-light' type='submit' name='action'>Send Cash<i class='material-icons center'></i></button>";
+	echo "</form>";
 
 	echo "<br>";
 	echo "<br>";

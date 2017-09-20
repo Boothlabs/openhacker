@@ -22,12 +22,6 @@ if($ip == "127.0.0.1" || $ip == "::1" || $ip == ''){
 				$senderid = $row['userid'];
 				$recieverid = $row['recvid'];
 				$amount = $row['amount'];
-				if($transactionid % 2 == 0){
-					$linkedtransid = $transactionid -1;
-				}
-				else {
-					$linkedtransid = $transactionid +1 ;
-				};
 				
 				$checkUserIp = "SELECT regip FROM accounts WHERE id = '$senderid' limit 1";
 				$chkipResult = $conn->query($checkUserIp);
@@ -46,25 +40,19 @@ if($ip == "127.0.0.1" || $ip == "::1" || $ip == ''){
 				if($senderid == $recieverid && $amount < 0 && $account1ip == $account2ip){
 					// Known bank transfer logic (A negative transaction charge is sent to the user to subtract out the dollar amount from their account.)
 					$WD_APP = "UPDATE bank_transactions SET watchdog_approve = '1', wd_scanned = '1' WHERE id = '$transactionid'";
-					$WD_LNK_TRNS = "UPDATE bank_transactions SET linked_transid = '$linkedtransid' WHERE id = '$transactionid'";
 					$result = $conn->query($WD_APP);
-					$result = $conn->query($WD_LNK_TRNS);
 
 				};
 				if($senderid == $recieverid && $amount > 0 && $account1ip == $account2ip){
 					// Known bank transfer logic (Post the new balance to the user as if they deposited the money themselves.)
 					$WD_APP = "UPDATE bank_transactions SET watchdog_approve = '1', wd_scanned = '1' WHERE id = '$transactionid'";
-					$WD_LNK_TRNS = "UPDATE bank_transactions SET linked_transid = '$linkedtransid' WHERE id = '$transactionid'";
 					$result = $conn->query($WD_APP);
-					$result = $conn->query($WD_LNK_TRNS);
 
 				};
 				if($senderid != $recieverid && $amount < 0 && $account1ip == $account2ip){
 					// ACCOUNT CAUGHT | User has created another account and sent the funds to alt account
 					$WD_DNY = "UPDATE bank_transactions SET watchdog_approve = '0', wd_scanned = '1' WHERE id = '$transactionid'";
-					$WD_LNK_TRNS = "UPDATE bank_transactions SET linked_transid = '$linkedtransid' WHERE id = '$transactionid'";
 					$result = $conn->query($WD_DNY);
-					$result = $conn->query($WD_LNK_TRNS);
 					
 					$sqlsearchuname = "SELECT username FROM accounts WHERE id = '$senderid' limit 1";
 					$result22 = $conn->query($sqlsearchuname);
@@ -77,9 +65,7 @@ if($ip == "127.0.0.1" || $ip == "::1" || $ip == ''){
 				if($senderid != $recieverid && $amount > 0 && $account1ip == $account2ip){
 					// ACCOUNT CAUGHT | User has created another account and sent the funds to alt account
 					$WD_DNY = "UPDATE bank_transactions SET watchdog_approve = '0' AND wd_scanned = '1' WHERE id = '$transactionid";
-					$WD_LNK_TRNS = "UPDATE bank_transactions SET linked_transid = '$linkedtransid' WHERE id = '$transactionid'";
 					$result = $conn->query($WD_DNY);
-					$result = $conn->query($WD_LNK_TRNS);
 					
 					$sqlsearchuname = "SELECT username FROM accounts WHERE id = '$senderid' limit 1";
 					$result22 = $conn->query($sqlsearchuname);
@@ -92,21 +78,15 @@ if($ip == "127.0.0.1" || $ip == "::1" || $ip == ''){
 				if($senderid != $recieverid && $amount > 0 && $account1ip != $account2ip){
 					// Known bank transfer logic ( Legit Transfer )
 					$WD_APP = "UPDATE bank_transactions SET watchdog_approve = '1', wd_scanned = '1' WHERE id = '$transactionid'";
-					$WD_LNK_TRNS = "UPDATE bank_transactions SET linked_transid = '$linkedtransid' WHERE id = '$transactionid'";
-					$result = $conn->query($WD_APP);
-					$result = $conn->query($WD_LNK_TRNS);					
+					$result = $conn->query($WD_APP);				
 				};
 				if($senderid == $recieverid && $amount > 0 && $account1ip != $account2ip){
 					$WD_APP = "UPDATE bank_transactions SET watchdog_approve = '1', wd_scanned = '1' WHERE id = '$transactionid'";
-					$WD_LNK_TRNS = "UPDATE bank_transactions SET linked_transid = '$linkedtransid' WHERE id = '$transactionid'";
-					$result = $conn->query($WD_APP);
-					$result = $conn->query($WD_LNK_TRNS);		
+					$result = $conn->query($WD_APP);		
 				};
 				if($senderid != $recieverid && $amount < 0 && $account1ip != $account2ip){
 					$WD_APP = "UPDATE bank_transactions SET watchdog_approve = '1', wd_scanned = '1' WHERE id = '$transactionid'";
-					$WD_LNK_TRNS = "UPDATE bank_transactions SET linked_transid = '$linkedtransid' WHERE id = '$transactionid'";
 					$result = $conn->query($WD_APP);
-					$result = $conn->query($WD_LNK_TRNS);
 				};
 			}		
 		}

@@ -37,6 +37,9 @@ if (empty($_GET['m'])){
 			case "clanbank": echo "Clan Bank";break;
 			case "clanroster": echo "Clan Roster";break;
 			case "profile": echo "Player Profile";break;
+			case "guest": echo "Guest";break;
+			case "login": echo "Login";break;
+			case "register": echo "Register";break;
 		};
 	};
 }
@@ -67,6 +70,9 @@ else {
 </head>
 
 <?php
+
+require_once '../htmlpurifier/library/HTMLPurifier.auto.php';
+$purifier = new HTMLPurifier();
 
 $mem = new Memcache();
 $mem->addServer("127.0.0.1", 11211);

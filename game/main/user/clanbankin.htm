@@ -21,8 +21,9 @@ $result = $conn->query($sql);
 // Set Clan bank password
 
 $password = $_POST['password'];
+$safepassword = mysqli_real_escape_string($conn, $password);
 
-$sqlSetCBP = "UPDATE clans SET bankpassword = '$password' WHERE id = '$clanid'";
+$sqlSetCBP = "UPDATE clans SET bankpassword = '$safepassword' WHERE id = '$clanid'";
 $resultSetCBP = $conn->query($sqlSetCBP);
 
 header("location: ?a=bank"); // Redirecting To Other Page

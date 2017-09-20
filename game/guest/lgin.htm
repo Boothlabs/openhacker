@@ -3,6 +3,9 @@
 if (empty($_SERVER['HTTP_CF_CONNECTING_IP'])) {
 	if(!empty($_SERVER["HTTP_X_FORWARDED_FOR"])) {
 		$ip = $_SERVER['HTTP_X_FORWARDED_FOR'];
+		// Check if IP is valid
+		if(filter_var($ip, FILTER_VALIDATE_IP)){} // Leave ip as is
+		else{$ip = $_SERVER['REMOTE_ADDR'];};		
 	}
 	else{
 	$ip = $_SERVER['REMOTE_ADDR'];
@@ -10,6 +13,9 @@ if (empty($_SERVER['HTTP_CF_CONNECTING_IP'])) {
 }
 else {
 	$ip = $_SERVER['HTTP_CF_CONNECTING_IP'];
+	// Check if IP is valid
+	if(filter_var($ip, FILTER_VALIDATE_IP)){} // Leave ip as is
+	else{$ip = $_SERVER['REMOTE_ADDR'];};	
 };
 
 $error=''; // Variable To Store Error Message
