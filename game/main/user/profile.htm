@@ -59,23 +59,33 @@ $ep = "***HIDDEN***";
 <h1><?php echo $prouser;?></h1>
 <ul>
 
-<?php 
+<?php
 
-		
 $b = $safeid;
 
-$filename = "/usr/share/nginx/html/public/images/avatars/{$b}.png";
 
-if (file_exists($filename)) {
-    $b = $safeid;
-} else {
-    $b = "default";
+$filename = "/usr/share/nginx/html/public/images/avatars/{$b}";
+
+if (file_exists("$filename.png")) {
+    $b = ("$safeid.png");
+
+} elseif (file_exists("$filename.jpg")) {
+	$b = ("$safeid.jpg");
+
+} elseif (file_exists("$filename.jpeg")) {
+	$b = ("$safeid.jpeg");
+
+} elseif (file_exists("$filename.gif")) {
+	$b = ("$safeid.gif");
+
+}
+else {
+    $b = ("default.png");
 }
 
 ?>
 
-
-	<li><img style="display:inline-block;height:150;width:150px;"src="/public/images/avatars/<?php echo $b;?>.png"></li>
+	<li><img style="display:inline-block;height:150;width:150px;"src="/public/images/avatars/<?php echo $b;?>"></li>
 	<?php
 	
 echo "<br>";
@@ -154,7 +164,7 @@ else {
 				<tr>
 					<td>Clan</td>
 					<?php
-						if($clan == ''){
+						if($clanname == ''){
 							echo '<td style="min-width:300px;">NONE</td>';
 						}
 						else{

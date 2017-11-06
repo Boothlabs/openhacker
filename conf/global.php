@@ -7,7 +7,7 @@ WARNING EDITING THIS DOCUMENT WITHOUT UNDERSTANDING WHAT EACH OPTION DOES CAN HA
 Each option allows for the manipulation of global values. These affect the game engine and should be tested prior to pushing to production.
 */
 
-$GAMEVERSION = "0.1.48"; // Game version
+$GAMEVERSION = "0.1.49"; // Game version
 $MAXEPCOUNT = 64000; // Max Experience allowed
 $MEP4LVL = 640; // Max experience per level
 

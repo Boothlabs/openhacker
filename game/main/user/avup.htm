@@ -58,7 +58,7 @@ foreach (glob("/usr/share/nginx/html/public/images/avatars/$userid.gif") as $del
 	
     if (move_uploaded_file($_FILES["fileToUpload"]["tmp_name"], $newfilename)) {
         echo "The file ". basename( $_FILES["fileToUpload"]["name"]). " has been uploaded.";
-		header("location: /game/main/index.php?a=accountdetails");
+		header("location: index.php?a=accountdetails");
     } else {
         echo "Sorry, there was an error uploading your file.";
 	

@@ -84,9 +84,9 @@
 							$sqlClan = "SELECT * FROM clans WHERE id = '$clan'";
 							$sqlClanResult = $conn->query($sqlClan);
 							while ($row78 = $sqlClanResult->fetch_assoc()){
-								$clanname = $row78['clanname'];
+								$clanName = $row78['clanname'];
 							};
-							echo "<li><a href='?a=clanpage'>$clanname</a></li>";
+							echo "<li><a href='?a=clanpage'>$clanName</a></li>";
 							echo "<li><a href='?a=clanroster'>Clan Roster</a></li>";
 							echo "<li><a href='?a=clanbank'>Clan Bank</a></li>";
 						};

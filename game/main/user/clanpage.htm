@@ -6,30 +6,35 @@ function checkDelete(){
 
 <?php
 $safeid = preg_replace('/[^-a-zA-Z0-9_]/', '', $_GET['id']);
+
+if(!isset($safeid)){
+	$sqlGetUsersClan = "SELECT clan FROM accounts WHERE id = '$userid'";
+	$resultGetUsersClan = $conn->query($sqlGetUsersClan);
+	while ($rowUserClan = $resultGetUsersClan->fetch_assoc()){
+		$safeid = $rowUserClan['clan'];
+	};
+};
+
 $sql = "SELECT * FROM clans WHERE id = '$safeid'";
 $result = $conn->query($sql);
-$id = $_GET['id'];
 
 while ($row = $result->fetch_assoc()){
-$proclan = $row['clanname'];
-$userlevel = $row['level'];
-$role = $row['role'];
-$regdate = $row['regdate'];
-$lastlogindate = $row['lastlogindate'];
-$lastseen = $row['lastseen'];
-$lastip = $row['lastip'];
-$regip = $row['regip'];
-$bio = $row['bio'];
-$modnotes = $row['modnotes'];
-$ep = $row['experience'];
-$clan = $row['clan'];
-$prevclan = $row['prevclan'];
+$clanName = $row['clanname'];
+$formationdate = $row['formationdate'];
+$gwstat = $row['gateway'];
 
 };
+
+$MAXCLANMEMBERS = 20;
+
+$sqlCountClanMembers = "SELECT id FROM accounts WHERE clan = '$safeid'";
+$resultCountClanMembers = $conn->query($sqlCountClanMembers);
+$totalMembers = mysqli_num_rows($resultCountClanMembers);
+
 ?>
 <div id="profile" style="background-image:url('');">
 
-<h1><?php echo $prouser;?></h1>
+<h1><?php echo $clanName;?></h1>
 <ul>
 
 <?php 
@@ -37,18 +42,29 @@ $prevclan = $row['prevclan'];
 		
 $b = $safeid;
 
-$filename = "/usr/share/nginx/html/public/images/avatars/{$b}.png";
+$filename = "/usr/share/nginx/html/public/images/clanavatars/{$b}";
 
-if (file_exists($filename)) {
-    $b = $safeid;
-} else {
-    $b = "default";
+if (file_exists("$filename.png")) {
+    $b = ("$safeid.png");
+
+} elseif (file_exists("$filename.jpg")) {
+	$b = ("$safeid.jpg");
+
+} elseif (file_exists("$filename.jpeg")) {
+	$b = ("$safeid.jpeg");
+
+} elseif (file_exists("$filename.gif")) {
+	$b = ("$safeid.gif");
+
+}
+else {
+    $b = ("default.png");
 }
 
 ?>
 
 
-	<li><img style="display:inline-block;height:150;width:150px;"src="/public/images/avatars/<?php echo $b;?>.png"></li>
+	<li><img style="display:inline-block;height:250;width:250px;"src="/public/images/avatars/<?php echo $b;?>.png"></li>
 	<?php
 
 	?>
@@ -61,9 +77,9 @@ if (file_exists($filename)) {
 			<tbody>
 				<tr>
 					<td>Formation Date</td>
-					<td style="min-width:300px;"><?php echo $regdate; ?></td></tr>
+					<td style="min-width:300px;"><?php echo $formationdate; ?></td></tr>
 					<tr><td>Total Members</td>
-					<td style="min-width:300px;"><?php echo $lastseen; ?></td>
+					<td style="min-width:300px;"><?php echo $totalMembers; ?> / <?php echo $MAXCLANMEMBERS;?></td>
 				</tr>
 
 				<tr>
@@ -71,7 +87,7 @@ if (file_exists($filename)) {
 					<td style="min-width:300px;"><?php echo $userlevel;?></td></tr>
 					<td>Gateway Status</td>
 					<?php 
-					if ($gwstat == 'online'){
+					if (isset($gwstat)){
 						echo '<td style="min-width:300px;color:limegreen !important;">Online</td>';
 					}
 					else {

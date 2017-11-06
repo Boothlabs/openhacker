@@ -14,11 +14,14 @@ function checkDelete(){
 	
 	$username = $_SESSION['login_user'];
 
-	$sqlGetClanID = "SELECT clan FROM accounts WHERE username = '$username'";
+	$sqlGetClanID = "SELECT clan, clancouncil FROM accounts WHERE username = '$username'";
 	$resultGetCID = $conn->query($sqlGetClanID);
 	while($rowCID = $resultGetCID->fetch_assoc()) {
 		$clanid = $rowCID['clan'];
+		$userClanRole = $rowCID['clancouncil'];
 	};
+
+
 
 $sql = "SELECT id, username, clancouncil FROM accounts WHERE clan = '$clanid'";
 $result = $conn->query($sql);
@@ -28,7 +31,32 @@ if ($result->num_rows > 0) {
 
      // output data of each row
      while($row = $result->fetch_assoc()) {
-    	 echo "<tr><td><a href=?a=profile&id=" . $row["id"]. ">" . $row["username"]. "</td><td>" . $row["clancouncil"]. "</td><td>" . $row["role"]. "</td><td>" . $row["lastip"]. "</td><td>" . $row["lastlogindate"]. "</td><td>" . $row["regdate"]. "";
+
+
+		// Retrieve and convert the clan role
+
+		// Retrieve each player's bank balance
+		$userid = $row["id"]; 
+		$sqlGetBankBalance = "SELECT * FROM economy WHERE userid = '$userid'";
+		$resultGetBankBalance = $conn->query($sqlGetBankBalance);
+		while ($rowBankBalance = $resultGetBankBalance->fetch_assoc()){
+			$balance = $rowBankBalance['cash'];
+		}; 
+
+		// Check if user is in the clan council to be able to see each player's balance
+			if($userClanRole == 0 && $row["id"] != $_SESSION['userid']) { // player not in council and not themselves
+				$balance = "**Hidden**";
+			};
+
+		// Set role to Member or Council 
+			if($row["clancouncil"] == 1) {
+				$clanrole = "Council";
+			}
+			else {
+				$clanrole = "Member";
+			};		
+
+    	 echo "<tr><td><a href=?a=profile&id=" . $row["id"]. ">" . $row["username"]. "</td><td> $clanrole </td><td>$"; printf("%.2f", $balance);
 		 echo "<td><a href=?a=profile&id=" . $row["id"]. "><button type='submit' name='action'><i class='material-icons center'>edit</i></button></a>";
 		 echo "<input type='hidden' name='tempId' value='".$row["id"]."'/><form action='?m=deluser' method='POST'><button type='submit' name='action' action=''><i class='material-icons center'>delete</i></button></form>";
 		 echo "<input type='hidden' name='tempId' value='".$row["id"]."'/><form action='?m=banuser' method='POST'><button type='submit' name='action'><i class='material-icons center'>block</i></button></form></td>";

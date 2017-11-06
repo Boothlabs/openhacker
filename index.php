@@ -94,13 +94,15 @@ if (isset($_SESSION['LAST_ACTIVITY']) && ($time - $_SESSION['LAST_ACTIVITY']) > 
 	$result = $conn->query($sql);
 	session_unset();
 	session_destroy();
-	session_start();
+	// session_start();
 };
 
 
 // REBUILD MODE
 
 if($adminrestrict == true && $adminip != $ip ){
+	// Prevent everybody except the admin to view the site
+	// Used primarily for locking down the game when a major issue is reported.
 	include 'layout/guest/header.htm';
 	
 	include "game/guest/rebuild.htm";
@@ -135,23 +137,23 @@ else {
 		$jailtime = '';
 		date_default_timezone_set('America/New_York');
 		$date = date('Y-m-d H-i-s');
-		$sql = "UPDATE accounts SET lastseen='$date' WHERE username='$username'";
-		$result = $conn->query($sql);
+		$sqlSetLastSeen = "UPDATE accounts SET lastseen='$date' WHERE username='$username'";
+		$resultSetLastSeen = $conn->query($sqlSetLastSeen);
 		
-		$sql = "SELECT * FROM accounts WHERE id ='$userid'";
-		$result = $conn->query($sql);
-		while ($row = $result->fetch_assoc()){
-			$currenttime = $row['lastseen'];
+		$sqlGetLastSeen = "SELECT * FROM accounts WHERE id ='$userid'";
+		$resultGetLastSeen = $conn->query($sqlGetLastSeen);
+		while ($rowGetLastSeen = $resultGetLastSeen->fetch_assoc()){
+			$currenttime = $rowGetLastSeen['lastseen'];
 		};
 		
-		$sql93 = "SELECT * FROM jail WHERE userid ='$userid' AND active = '1'";
-		$result12 = $conn->query($sql93);
+		$sqlGetJail = "SELECT * FROM jail WHERE userid ='$userid' AND active = '1'";
+		$resultGetJail = $conn->query($sqlGetJail);
 		
-		$num_rows = mysqli_num_rows($result12);
+		$num_rows = mysqli_num_rows($resultGetJail);
 		
 		if($num_rows == 1) {
 		
-			while ($row1 = $result12->fetch_assoc()){
+			while ($row1 = $resultGetJail->fetch_assoc()){
 				$jailtime = $row1['jailrelease'];
 			};
 		};		
@@ -161,9 +163,9 @@ else {
 		echo 'System Time: <div id="clockbox"></div>';
 		echo 'Small Hacks: <div id="countdown"></div>';
 		
-		$sql = "SELECT * FROM accounts WHERE id = '$userid'";
-		$result = $conn->query($sql);
-			while($row = $result->fetch_assoc()){
+		$sqlGetSmallHackCd = "SELECT * FROM accounts WHERE id = '$userid'";
+		$resultGetSmallHackCd = $conn->query($sqlGetSmallHackCd);
+			while($row = $resultGetSmallHackCd->fetch_assoc()){
 					$cooldown = $row['smallhackcd'];
 			}; 
 		
